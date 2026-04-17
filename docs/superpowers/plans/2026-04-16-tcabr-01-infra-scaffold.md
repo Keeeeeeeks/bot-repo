@@ -1211,7 +1211,7 @@ class FeatureWeightsConfig(TypedDict):
 
 
 _JSON_PATH = (
-    Path(__file__).resolve().parents[3]
+    Path(__file__).resolve().parents[4]
     / "packages"
     / "shared"
     / "src"
