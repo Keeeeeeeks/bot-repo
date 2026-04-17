@@ -3,6 +3,8 @@ from __future__ import annotations
 from arq.connections import RedisSettings
 
 from .config import settings
+from .db import close_pool
+from .jobs import scan_repo
 from .sentry import init_sentry
 
 
@@ -12,7 +14,7 @@ async def startup(ctx: dict) -> None:
 
 
 async def shutdown(ctx: dict) -> None:
-    pass
+    await close_pool()
 
 
 async def health(ctx: dict) -> dict[str, str]:
@@ -20,8 +22,9 @@ async def health(ctx: dict) -> dict[str, str]:
 
 
 class WorkerSettings:
-    functions = [health]
+    functions = [health, scan_repo]
     on_startup = startup
     on_shutdown = shutdown
     redis_settings = RedisSettings.from_dsn(settings.redis_url)
     max_jobs = 4
+    job_timeout = 60 * 30  # 30 min cap for large scans
