@@ -20,6 +20,9 @@ Prereqs: Node 20+, pnpm 9, Python 3.12+, `uv`, Docker (for Supabase local), `sup
     pnpm seed:weights
     pnpm dev
 
+    # Start the bridge alongside the worker so Next.js can enqueue scans:
+    cd apps/worker && .venv/bin/python -m tcabr_worker.bridge &
+
 ## Plans
 
 See `docs/superpowers/plans/`.
