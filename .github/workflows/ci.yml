@@ -1,0 +1,46 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with: { version: 9.10.0 }
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: ".nvmrc"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @tcabr/shared test
+      - run: pnpm --filter @tcabr/web typecheck
+      - run: pnpm --filter @tcabr/web build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: http://placeholder
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
+          UPSTASH_REDIS_REST_URL: http://placeholder
+          UPSTASH_REDIS_REST_TOKEN: placeholder
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - name: Setup Python
+        run: uv python install 3.12
+      - name: Install worker
+        working-directory: apps/worker
+        run: |
+          uv venv
+          uv pip install -e ".[dev]"
+      - name: Ruff
+        working-directory: apps/worker
+        run: .venv/bin/ruff check src tests
+      - name: Pytest
+        working-directory: apps/worker
+        run: .venv/bin/pytest -v
