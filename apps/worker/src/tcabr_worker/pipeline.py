@@ -50,6 +50,7 @@ async def run_scan(
     upsert_profile: Callable[[UserProfile], Awaitable[None]],
     sample_threshold: int | None = None,
     sample_size: int | None = None,
+    excluded: set[str] | None = None,
 ) -> dict[str, Any]:
     """Execute a full scan and return a snapshot dict ready for DB write."""
     threshold = sample_threshold or settings.sample_threshold
@@ -60,6 +61,8 @@ async def run_scan(
 
     all_events: list[StargazerEvent] = [e async for e in gh.iter_stargazers(req.owner, req.name)]
     sample, is_full = sample_stargazers(all_events, threshold, size, seed=hash(req.repo_slug) % (2**32))
+    if excluded:
+        sample = [ev for ev in sample if ev.username not in excluded]
 
     # Repo-level pre-pass — burst windows computed on the FULL event set.
     burst_windows = detect_burst_windows(all_events, bucket_hours=24, z_threshold=3.0)
