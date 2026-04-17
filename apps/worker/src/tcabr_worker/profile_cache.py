@@ -39,6 +39,18 @@ async def get_cached(pool: asyncpg.Pool, username: str, ttl_days: int) -> UserPr
     )
 
 
+async def upsert_profile_unless_excluded(
+    pool: asyncpg.Pool, p: UserProfile
+) -> None:
+    async with pool.acquire() as c:
+        excluded = await c.fetchval(
+            "select 1 from user_exclusion where gh_username = $1", p.username
+        )
+    if excluded:
+        return
+    await upsert_profile(pool, p)
+
+
 async def upsert_profile(pool: asyncpg.Pool, p: UserProfile) -> None:
     raw = dict(p.raw)
     raw["_avatar_default"] = p.avatar_is_default

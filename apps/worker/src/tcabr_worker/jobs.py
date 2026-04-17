@@ -9,7 +9,7 @@ from .github import GitHubClient
 from .models import ScanRequest
 from .persist import persist_snapshot
 from .pipeline import run_scan
-from .profile_cache import get_cached, upsert_profile
+from .profile_cache import get_cached, upsert_profile_unless_excluded
 
 
 async def scan_repo(
@@ -60,4 +60,4 @@ async def _cached(pool, username):
 
 
 async def _upsert(pool, profile):
-    return await upsert_profile(pool, profile)
+    return await upsert_profile_unless_excluded(pool, profile)

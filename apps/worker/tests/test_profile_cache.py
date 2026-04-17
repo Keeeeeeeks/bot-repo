@@ -5,7 +5,7 @@ import pytest
 
 from tcabr_worker.config import settings
 from tcabr_worker.models import UserProfile
-from tcabr_worker.profile_cache import get_cached, upsert_profile
+from tcabr_worker.profile_cache import get_cached, upsert_profile, upsert_profile_unless_excluded
 
 
 @pytest.fixture
@@ -37,6 +37,25 @@ async def test_upsert_then_hit(pool: asyncpg.Pool) -> None:
     await upsert_profile(pool, p)
     got = await get_cached(pool, "testuser_hit", ttl_days=7)
     assert got is not None and got.username == "testuser_hit" and got.followers == 3
+
+
+@pytest.mark.asyncio
+async def test_upsert_skipped_for_excluded(pool: asyncpg.Pool) -> None:
+    async with pool.acquire() as c:
+        await c.execute(
+            "insert into user_exclusion(gh_username) values('testuser_excl') "
+            "on conflict do nothing"
+        )
+    p = UserProfile(
+        username="testuser_excl",
+        joined_at=datetime(2025, 1, 1, tzinfo=timezone.utc),
+    )
+    await upsert_profile_unless_excluded(pool, p)
+    got = await get_cached(pool, "testuser_excl", ttl_days=7)
+    assert got is None
+
+    async with pool.acquire() as c:
+        await c.execute("delete from user_exclusion where gh_username='testuser_excl'")
 
 
 @pytest.mark.asyncio
