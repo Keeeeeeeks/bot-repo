@@ -1,0 +1,88 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      Accept:
+      - application/vnd.github+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Host:
+      - api.github.com
+      User-Agent:
+      - tcabr/0.1
+    method: GET
+    uri: https://api.github.com/users/octocat
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA5VU0W6bMBT9lcrPpA4miTJLUfcwTepDOlVLp6kvyBgXPBkb2YYoQf33XWOWdHmo
+        xBPm6J5zD9f3MCBlKqkRRYZ7w5lHCZIlouttRrI0QdqUIg8A2n973vz6/aT4n5fV/vx43j/vdlDM
+        euaZzTuroKb2vnUU4wi6+0r6uis6Jyw32gvt77lpcIej+kO/W4FCZSeNsQ0AN1qtnHQiGcQcvpqt
+        faNuuseuY/W17s0oZY7AvbX6iTy+kMBVPEtdzRcA0oCNrwXMCey/h4+Wzs+yMhIGHB5wH0HCwdyt
+        KOfYmShg5qjBx4CtaM2o1RWOW9l6afQsW/8RQcjYiml5ZrOFgOiAHwzNMjASgCh6WK9ZzMgYcGtl
+        z/gpjMEKLmQPM52vdkMFMX9qBSz0C9w4vIWLz3spjvmEt12hJA+zl17krGxCCt+YcgJSx5pAPdTi
+        7scllrDPLdMnwL/GDQduAen9kLtp80c0gWRDnuFCoeAn03ffLdNcOm7CtBomIbC6UypBtbSCFQo6
+        xvdCmn9Hf5TeT2sbTcWSaD6Pw6fbBE3AuKUoANfoUEKy9QWBLCD6JUEcenqYNPxxKCLLNF0s0wVZ
+        H9ItXa1otnkNM2vLjzVks1hmC0IOaUpJRpfkFb3/Bf1oA8DABAAA
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - public, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '495'
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 17 Apr 2026 06:03:56 GMT
+      ETag:
+      - W/"21dde787a9778a25144670dec5a2a92cef1a93a56706c87397b6f5c3aee4d446"
+      Last-Modified:
+      - Sun, 22 Mar 2026 11:23:02 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - github.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Vary:
+      - Accept,Accept-Encoding, Accept, X-Requested-With
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - FE33:2F8C43:12308FB:4A5E603:69E1CD4C
+      X-RateLimit-Limit:
+      - '60'
+      X-RateLimit-Remaining:
+      - '55'
+      X-RateLimit-Reset:
+      - '1776408772'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '5'
+      X-XSS-Protection:
+      - '0'
+      x-github-api-version-selected:
+      - '2022-11-28'
+    status:
+      code: 200
+      message: OK
+version: 1

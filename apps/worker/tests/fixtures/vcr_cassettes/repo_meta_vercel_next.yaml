@@ -1,0 +1,106 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      Accept:
+      - application/vnd.github+json
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Host:
+      - api.github.com
+      User-Agent:
+      - tcabr/0.1
+    method: GET
+    uri: https://api.github.com/repos/vercel/next.js
+  response:
+    body:
+      string: !!binary |
+        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
+    headers:
+      Accept-Ranges:
+      - bytes
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - ETag, Link, Location, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining,
+        X-RateLimit-Used, X-RateLimit-Resource, X-RateLimit-Reset, X-OAuth-Scopes,
+        X-Accepted-OAuth-Scopes, X-Poll-Interval, X-GitHub-Media-Type, X-GitHub-SSO,
+        X-GitHub-Request-Id, Deprecation, Sunset
+      Cache-Control:
+      - public, max-age=60, s-maxage=60
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1519'
+      Content-Security-Policy:
+      - default-src 'none'
+      Content-Type:
+      - application/json; charset=utf-8
+      Date:
+      - Fri, 17 Apr 2026 06:03:56 GMT
+      ETag:
+      - W/"e52fe5f0d34c67c777fd4b90850979d1d3541f2dd9fbd8fd51faec21a15f1499"
+      Last-Modified:
+      - Fri, 17 Apr 2026 05:33:28 GMT
+      Referrer-Policy:
+      - origin-when-cross-origin, strict-origin-when-cross-origin
+      Server:
+      - github.com
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains; preload
+      Vary:
+      - Accept,Accept-Encoding, Accept, X-Requested-With
+      X-Content-Type-Options:
+      - nosniff
+      X-Frame-Options:
+      - deny
+      X-GitHub-Media-Type:
+      - github.v3; format=json
+      X-GitHub-Request-Id:
+      - FE2A:1E42E5:117666E:471094A:69E1CD4C
+      X-RateLimit-Limit:
+      - '60'
+      X-RateLimit-Remaining:
+      - '58'
+      X-RateLimit-Reset:
+      - '1776408772'
+      X-RateLimit-Resource:
+      - core
+      X-RateLimit-Used:
+      - '2'
+      X-XSS-Protection:
+      - '0'
+      x-github-api-version-selected:
+      - '2022-11-28'
+    status:
+      code: 200
+      message: OK
+version: 1
