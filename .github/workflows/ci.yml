@@ -19,6 +19,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter @tcabr/shared test
       - run: pnpm --filter @tcabr/web typecheck
+      - run: pnpm --filter @tcabr/web test:unit
       - run: pnpm --filter @tcabr/web build
         env:
           NEXT_PUBLIC_SUPABASE_URL: http://placeholder
