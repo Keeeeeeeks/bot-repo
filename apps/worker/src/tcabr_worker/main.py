@@ -5,10 +5,12 @@ from arq.connections import RedisSettings
 from .config import settings
 from .db import close_pool
 from .jobs import scan_repo
+from .log import configure_logging
 from .sentry import init_sentry
 
 
 async def startup(ctx: dict) -> None:
+    configure_logging()
     init_sentry()
     ctx["started"] = True
 
