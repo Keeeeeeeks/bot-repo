@@ -1,0 +1,2 @@
+-- Seed is handled by scripts/seed-weights.ts (TS is source of truth for weights).
+-- This file intentionally left empty so `supabase db reset` does not clobber weights.
