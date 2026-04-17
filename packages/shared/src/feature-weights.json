@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "updated_at": "2026-04-16",
+  "normalization": { "max_raw": 15, "scale": 100 },
+  "features": [
+    { "id": "new_account", "weight": 3, "description": "created_at within rolling 180 days" },
+    { "id": "no_recent_commits", "weight": 2, "description": "0 public push events in last 60 days" },
+    { "id": "zero_social", "weight": 2, "description": "followers == 0 AND following == 0" },
+    { "id": "sparse_profile", "weight": 1, "description": "empty bio AND default avatar" },
+    { "id": "star_farmer", "weight": 2, "description": ">50 stars, stars >>10x own public repos, clustered in bursts" },
+    { "id": "bot_username", "weight": 2, "description": "matches known bot username regex set" },
+    { "id": "star_burst", "weight": 3, "description": "star on target repo falls within repo-level burst window" }
+  ]
+}
