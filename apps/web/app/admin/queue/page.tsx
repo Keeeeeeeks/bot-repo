@@ -9,7 +9,9 @@ export const dynamic = "force-dynamic";
 export default async function AdminQueue() {
   const c = await cookies();
   const token = c.get("tcabr_admin")?.value;
-  const secret = process.env.ADMIN_TOKEN_SECRET!;
+  const secret = process.env.ADMIN_TOKEN_SECRET;
+  // If the secret is missing, the layout already rendered a config-error page; be defensive anyway.
+  if (!secret) redirect("/admin/login");
   if (!token) redirect("/admin/login");
   try {
     const { email } = verifyToken(token, secret);

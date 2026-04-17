@@ -5,7 +5,18 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const c = await cookies();
   const token = c.get("tcabr_admin")?.value;
   const secret = process.env.ADMIN_TOKEN_SECRET;
-  if (!secret) throw new Error("ADMIN_TOKEN_SECRET missing");
+
+  if (!secret) {
+    return (
+      <div className="mx-auto max-w-2xl px-6 py-16">
+        <h1 className="text-xl font-semibold">Admin unavailable</h1>
+        <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-400">
+          This environment is missing <code>ADMIN_TOKEN_SECRET</code>. Set it in the
+          deployment config before the admin console can be used.
+        </p>
+      </div>
+    );
+  }
 
   let authed = false;
   if (token) {
