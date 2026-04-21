@@ -249,3 +249,88 @@ Max per-user raw score = 15; normalized to 0–100. Repo-level anomaly score = m
 - Choice of US state for LLC formation (Wyoming vs Delaware vs home state).
 - Weight calibration against a hand-labeled set before launch.
 - Final leaderboard refresh cadence (nightly vs 6-hourly).
+
+## 16. Research-derived additions (2026-04-21)
+
+Sourced from two external reads:
+- Quira, *Developer reputation in the era of LLMs* (DevRank / PageRank over the GitHub graph).
+- Awesome Agents, *GitHub fake-stars investigation* (echoes StarScout @ CMU/NC State/Socket, 20 TB / 6.7 B events / 18,617 repos flagged).
+
+### 16.1 New per-stargazer features (candidates for v1.1 config)
+
+| Feature | Definition | Proposed weight | Notes |
+|---|---|---|---|
+| `zero_public_repos` | `public_repos == 0` | +2 | Organic baseline ~5%, suspicious cohorts 28–39%. Distinct from `zero_social`. |
+| `ghost_account` | `zero_social` AND `zero_public_repos` AND empty bio AND default avatar | +3 | Organic ~1%, suspicious 19–29%. Composite signal — should *replace* single-point bonus when it fires so we don't double-count. |
+| `account_age_median_bucket` | account age < 1,200 days (≈3.3 yr) | +1 | Per-stargazer. Lighter than the existing <180d hard flag, captures broader "young cohort" pattern (suspicious cohort median 997–1,180 d vs organic 2,800–4,800 d). |
+
+### 16.2 New repo-level signals (aggregate over the stargazer sample, not per-user)
+
+Awesome Agents' "organic" table is entirely repo-aggregate. We currently output a repo anomaly score by averaging per-user scores; we should also surface **repo-level structural ratios** that don't depend on stargazer enrichment (cheap, computable from public repo metadata alone):
+
+| Signal | Organic baseline | Suspicious cutoff | Where it lands |
+|---|---|---|---|
+| `fork_to_star_ratio` | ~0.160 | `< 0.050` | Top-level repo metric; shown on report hero alongside anomaly score. |
+| `watcher_to_star_ratio` | 0.005–0.030 | `< 0.001` | Same as above. |
+| `pct_zero_repo_stargazers` | ~5% | `≥ 25%` | Derived from sample. |
+| `pct_zero_follower_stargazers` | 5–12% | `≥ 50%` | Derived from sample. |
+| `pct_ghost_stargazers` | ~1% | `≥ 15%` | Derived from sample. |
+| `median_stargazer_account_age_days` | 2,800–4,800 | `< 1,500` | Derived from sample. |
+
+These go into a new `feature_breakdown.repo_level` block on the snapshot and a second row on the report page.
+
+### 16.3 DevRank / network-topology signal (Phase 2)
+
+Quira's DevRank applies PageRank over a tripartite graph:
+1. Developer → Repo (star edges)
+2. Repo → Developer (commit edges)
+3. Repo → Repo (dependency/import edges)
+
+For our use case, we only need the first two. Proposed additions:
+
+- **Per-stargazer `devrank_percentile`** — precomputed offline from a periodic graph snapshot; the top 1% and top 10% fractions among a repo's stargazers become a "social proof" signal opposite to the anomaly score.
+- **Leaderboard companion column** — "% of stargazers in DevRank top 10%." High for truly organic breakout repos (LangChain, PyTorch), near-zero for farm-boosted.
+- **Gating:** PageRank over the full GitHub network is expensive; MVP can instead use a cheap proxy — median(contributor followers) or median(stargazer public-repos count). Full DevRank is a Phase-2 research track.
+
+### 16.4 Cross-validation against StarScout
+
+CMU's StarScout has a published flagged list (90.42% of their flagged repos were subsequently deleted by GitHub — strong ground truth). TODOs:
+
+- Obtain the StarScout public dataset (paper appendix or Socket blog).
+- Add an admin-only `/admin/starscout-overlap` page that reports: of repos we score >threshold, what fraction appear in StarScout? Inverse too.
+- Use overlap as a weight-calibration signal (replaces or augments the hand-labeled set mentioned in §15).
+
+### 16.5 Category-bias guard
+
+Quira flags "educational / first-contribution" repos as legitimately inflating star counts in ways that distort reputation metrics. We should:
+
+- Add a `repo_category` tag (detected via topics/README heuristics: tutorial, awesome-list, first-contribution, dotfiles).
+- On the report, down-weight or explicitly caveat the anomaly score for these categories — the same new-account fraction is expected for a beginner-friendly repo.
+- On the leaderboard, exclude educational categories from the "most suspicious" list by default, with a toggle.
+
+### 16.6 Reverse-engineering known botting tooling
+
+Three open-source "star/commit botting" tools are known public references. For each we want to (a) understand the generated fingerprint so we can detect its output, and (b) scan the tool's own stargazers, since they are disproportionately likely to be bot operators or bot-controlled accounts (a self-labeled dataset).
+
+**Tools to investigate:**
+
+- **fake-git-history** (github.com/artiebits/fake-git-history) — generates backdated commit history for contribution graph padding. Fingerprint hypotheses: commit timestamps on a uniform or regular grid, author email = user's real email, commits all on a single orphan branch, single-file touches, empty-or-generated commit messages.
+- **commit-bot** (various forks of `commit-bot`) — scheduled commits to pad activity; fingerprint hypothesis: cron-hour alignment in commit timestamps, repeating commit-message templates.
+- **Commiter** (github.com/romeroadrian/Commiter and similar) — programmatic commit generator; fingerprint hypothesis: deterministic commit messages, timestamp clustering at tool-run times.
+
+**Per-tool action items:**
+
+1. **Trace default patterns** — clone each, run it against a throwaway repo, record the resulting commit graph:
+   - timestamp distribution (hour-of-day / day-of-week entropy)
+   - commit-message n-gram fingerprint
+   - file-touch pattern (same file every commit? generated filename?)
+   - branch topology (single orphan branch? fast-forwards only?)
+   - author-committer mismatch
+2. **Derive detector signatures** — add new per-user features (e.g., `commit_timing_entropy_low`, `commit_message_template_match`) usable when we enrich a stargazer profile by pulling their recent commits.
+3. **Build a synthetic benchmark** — a private repo seeded with commits from each tool. Assert our classifier flags ≥95% of the bot accounts in the synthetic sample.
+4. **Scan the tools' own stargazers** — run a TCABR scan on each of the three tool repos. Two outputs:
+   - A labeled training set — users who star `fake-git-history` skew heavily toward bot operators / throwaway accounts.
+   - A direct PR piece: "the people starring bot-making tools look exactly like the people our classifier flags."
+5. **Flag the tools as known-manipulation sources** — add a `known_manipulation_tool` repo tag; any stargazer seen on multiple such repos gets a persistent per-user flag that carries across scans.
+
+**Deliverable:** a `docs/research/botting-toolkit-fingerprints.md` writeup (Phase 2) with per-tool signature tables and a summary of how our v1 weights perform against each.
