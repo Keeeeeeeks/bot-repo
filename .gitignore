@@ -1,6 +1,9 @@
-.agents/
-.claude/
-docs/
+.agents/*
+.agents/skills
+.claude/*
+.claude/skills
+docs/*
+docs/superpowers/
 node_modules/
 .next/
 .turbo/
