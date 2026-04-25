@@ -1,14 +1,23 @@
 import { createClient } from "@supabase/supabase-js";
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+function requiredEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} missing`);
+  return value;
+}
 
-export const supabasePublic = createClient(url, anonKey, {
-  auth: { persistSession: false },
-});
+export function supabasePublic() {
+  return createClient(
+    requiredEnv("NEXT_PUBLIC_SUPABASE_URL"),
+    requiredEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+    { auth: { persistSession: false } },
+  );
+}
 
 export function supabaseService() {
-  if (!serviceKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY missing");
-  return createClient(url, serviceKey, { auth: { persistSession: false } });
+  return createClient(
+    requiredEnv("NEXT_PUBLIC_SUPABASE_URL"),
+    requiredEnv("SUPABASE_SERVICE_ROLE_KEY"),
+    { auth: { persistSession: false } },
+  );
 }

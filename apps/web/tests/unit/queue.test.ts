@@ -1,5 +1,5 @@
 // apps/web/tests/unit/queue.test.ts
-import { describe, it, expect, vi } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 import { enqueueScan, getJobStatus } from "@/lib/queue";
 
 vi.mock("@upstash/redis", () => {
@@ -15,6 +15,22 @@ vi.mock("@upstash/redis", () => {
 });
 
 describe("queue", () => {
+  const originalUrl = process.env.UPSTASH_REDIS_REST_URL;
+  const originalToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  beforeEach(() => {
+    process.env.UPSTASH_REDIS_REST_URL = "https://redis.example.test";
+    process.env.UPSTASH_REDIS_REST_TOKEN = "test-token";
+  });
+
+  afterEach(() => {
+    if (originalUrl === undefined) delete process.env.UPSTASH_REDIS_REST_URL;
+    else process.env.UPSTASH_REDIS_REST_URL = originalUrl;
+
+    if (originalToken === undefined) delete process.env.UPSTASH_REDIS_REST_TOKEN;
+    else process.env.UPSTASH_REDIS_REST_TOKEN = originalToken;
+  });
+
   it("enqueueScan returns a job id", async () => {
     const { jobId } = await enqueueScan({ owner: "a", name: "b" }, null);
     expect(jobId).toMatch(/^scan_[a-f0-9-]+$/);

@@ -3,6 +3,9 @@ import { SubmitAndNavigate } from "@/components/SubmitAndNavigate";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { fetchLeaderboard } from "@/lib/snapshots";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function Home() {
   const [sus, clean] = await Promise.all([
     fetchLeaderboard("suspicious", 5),

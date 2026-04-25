@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { redis, jobStatusKey } from "./redis";
+import { getRedis, jobStatusKey } from "./redis";
 
 export interface JobStatus {
   state: "queued" | "running" | "done" | "error";
@@ -14,6 +14,7 @@ export async function enqueueScan(
   repo: { owner: string; name: string },
   userToken: string | null,
 ): Promise<{ jobId: string }> {
+  const redis = getRedis();
   const jobId = `scan_${randomUUID()}`;
   // Minimal arq-compatible payload. The worker's `scan_repo(ctx, owner, name, user_token)` signature
   // consumes positional args from `pickle`-serialized list. To avoid a pickle dependency in Node,
@@ -34,6 +35,7 @@ export async function enqueueScan(
 }
 
 export async function getJobStatus(jobId: string): Promise<JobStatus | null> {
+  const redis = getRedis();
   const raw = await redis.get<string | JobStatus>(jobStatusKey(jobId));
   if (!raw) return null;
   return typeof raw === "string" ? (JSON.parse(raw) as JobStatus) : raw;
